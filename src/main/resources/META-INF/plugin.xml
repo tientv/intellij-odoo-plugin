@@ -1,0 +1,130 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.github.tientv.intellij-odoo-plugin</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Odoo Development Support</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="tientran201yd@gmail.com" url="https://github.com/tientv">Tien Tran</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> bracket. -->
+    <description><![CDATA[
+        <h3>Odoo 18 Development Support for PyCharm</h3>
+        <p>This plugin provides intelligent code completion, navigation, and analysis for Odoo 18 development in PyCharm.</p>
+        
+        <h4>Features:</h4>
+        <ul>
+            <li><strong>Model Detection:</strong> Automatically detects Odoo models in your project</li>
+            <li><strong>Field Completion:</strong> Smart autocompletion for model fields</li>
+            <li><strong>Method Completion:</strong> Completion for Odoo framework methods</li>
+            <li><strong>Reference Resolution:</strong> Navigate to model and field definitions</li>
+            <li><strong>XML View Support:</strong> Completion for XML view elements</li>
+            <li><strong>Manifest Support:</strong> Parse and validate __manifest__.py files</li>
+        </ul>
+        
+        <h4>Supported Odoo Versions:</h4>
+        <ul>
+            <li>Odoo 18.0</li>
+            <li>Odoo 17.0 (partial support)</li>
+        </ul>
+        
+        <p>This plugin enhances your Odoo development experience by providing PyCharm with deep understanding of the Odoo framework structure.</p>
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>PythonCore</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Project Service for Odoo detection -->
+        <projectService serviceInterface="com.tmc.odoo.pycharm.services.OdooProjectService"
+                       serviceImplementation="com.tmc.odoo.pycharm.services.OdooProjectService"/>
+
+        <!-- Completion Contributors -->
+        <completion.contributor 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.completion.OdooModelCompletionContributor"/>
+        
+        <completion.contributor 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.completion.OdooFieldCompletionContributor"/>
+        
+        <completion.contributor 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.completion.OdooMethodCompletionContributor"/>
+
+        <!-- Reference Contributors -->
+        <psi.referenceContributor 
+            language="Python" 
+            implementation="com.tmc.odoo.pycharm.references.OdooReferenceContributor"/>
+
+        <!-- Line Marker Providers - Commented out until implementation -->
+        <!-- <codeInsight.lineMarkerProvider 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.markers.OdooModelLineMarkerProvider"/> -->
+
+        <!-- Inspections -->
+        <localInspection 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.inspections.OdooModelInspection"
+            displayName="Odoo Model Issues"
+            groupName="Odoo"
+            enabledByDefault="true"
+            level="WARNING"/>
+
+        <!-- File Type for Odoo Manifest -->
+        <fileType 
+            name="Odoo Manifest" 
+            implementationClass="com.tmc.odoo.pycharm.files.OdooManifestFileType"
+            fieldName="INSTANCE" 
+            language="Python" 
+            extensions="__manifest__.py"/>
+
+        <!-- Project Configuration - Commented out until implementation -->
+        <!-- <projectConfigurable 
+            parentId="tools" 
+            instance="com.tmc.odoo.pycharm.settings.OdooSettingsConfigurable"
+            id="com.tmc.odoo.pycharm.settings.OdooSettingsConfigurable"
+            displayName="Odoo Settings"/> -->
+
+        <!-- Facet for Odoo Projects - Commented out until implementation -->
+        <!-- <facetType implementation="com.tmc.odoo.pycharm.facet.OdooFacetType"/> -->
+        
+        <!-- Framework Support - Commented out until implementation -->
+        <!-- <framework.detector implementation="com.tmc.odoo.pycharm.framework.OdooFrameworkDetector"/> -->
+    </extensions>
+
+    <!-- Action Extensions - Commented out until implementation -->
+    <!-- <actions>
+        <group id="OdooMenuGroup" text="Odoo" description="Odoo Development Actions">
+            <add-to-group group-id="MainMenu" anchor="before" relative-to-action="HelpMenu"/>
+            
+            <action id="OdooGenerateModel" 
+                    class="com.tmc.odoo.pycharm.actions.GenerateModelAction"
+                    text="Generate Odoo Model"
+                    description="Generate a new Odoo model">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
+            </action>
+            
+            <action id="OdooGoToModel" 
+                    class="com.tmc.odoo.pycharm.actions.GoToModelAction"
+                    text="Go to Odoo Model"
+                    description="Navigate to Odoo model definition">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt M"/>
+            </action>
+        </group>
+    </actions> -->
+
+    <!-- Project listeners -->
+    <projectListeners>
+        <listener class="com.tmc.odoo.pycharm.listeners.OdooProjectListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </projectListeners>
+</idea-plugin>
