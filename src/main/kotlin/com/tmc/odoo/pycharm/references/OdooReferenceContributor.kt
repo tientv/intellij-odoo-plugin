@@ -3,64 +3,80 @@ package com.tmc.odoo.pycharm.references
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.util.ProcessingContext
-import com.jetbrains.python.psi.PyStringLiteralExpression
-import com.jetbrains.python.PythonLanguage
+import com.jetbrains.python.psi.*
 import com.tmc.odoo.pycharm.services.OdooProjectService
 
 class OdooReferenceContributor : PsiReferenceContributor() {
-    
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
-        // Register reference provider for string literals that might contain model names
         registrar.registerReferenceProvider(
-            PlatformPatterns.psiElement(PyStringLiteralExpression::class.java)
-                .withLanguage(PythonLanguage.getInstance()),
+            PlatformPatterns.psiElement(PyStringLiteralExpression::class.java),
             OdooModelReferenceProvider()
         )
     }
 }
 
 class OdooModelReferenceProvider : PsiReferenceProvider() {
-    
-    override fun getReferencesByElement(
-        element: PsiElement,
-        context: ProcessingContext
-    ): Array<PsiReference> {
-        val stringLiteral = element as? PyStringLiteralExpression ?: return emptyArray()
-        val value = stringLiteral.stringValue
+    override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+        if (element !is PyStringLiteralExpression) return PsiReference.EMPTY_ARRAY
         
-        // Check if this looks like a model name (contains dots)
-        if (value.contains('.')) {
-            val project = element.project
-            val odooService = OdooProjectService.getInstance(project)
-            
-            if (odooService.isOdooProject()) {
-                return arrayOf(OdooModelReference(element, value))
+        val project = element.project
+        val odooService = OdooProjectService.getInstance(project)
+        
+        if (!odooService.isOdooProject()) return PsiReference.EMPTY_ARRAY
+        
+        val stringValue = element.stringValue
+        if (stringValue.isBlank()) return PsiReference.EMPTY_ARRAY
+        
+        // Check if this string literal represents an Odoo model name
+        if (isModelReference(element)) {
+            return arrayOf(OdooModelReference(element, stringValue))
+        }
+        
+        return PsiReference.EMPTY_ARRAY
+    }
+    
+    private fun isModelReference(element: PyStringLiteralExpression): Boolean {
+        val parent = element.parent
+        
+        // Check for patterns like self.env['model.name']
+        if (parent is PySubscriptionExpression) {
+            val operand = parent.operand
+            if (operand is PyReferenceExpression && operand.text == "self.env") {
+                return true
             }
         }
         
-        return emptyArray()
+        // Check for patterns like env['model.name']
+        if (parent is PySubscriptionExpression) {
+            val operand = parent.operand
+            if (operand is PyReferenceExpression && operand.name == "env") {
+                return true
+            }
+        }
+        
+        return false
     }
 }
 
 class OdooModelReference(
-    element: PsiElement,
+    element: PyStringLiteralExpression,
     private val modelName: String
-) : PsiReferenceBase<PsiElement>(element) {
+) : PsiReferenceBase<PyStringLiteralExpression>(element) {
     
     override fun resolve(): PsiElement? {
         val project = element.project
-        val service = OdooProjectService.getInstance(project)
-        val model = service.findModel(modelName)
+        val odooService = OdooProjectService.getInstance(project)
+        
+        val model = odooService.findModel(modelName)
         return model?.psiClass
     }
     
     override fun getVariants(): Array<Any> {
         val project = element.project
-        val service = OdooProjectService.getInstance(project)
-        return service.getAllModels().map { model ->
-            com.intellij.codeInsight.lookup.LookupElementBuilder.create(model.name)
-                .withIcon(com.tmc.odoo.pycharm.icons.OdooIcons.MODEL)
-                .withTypeText(model.modulePath)
-        }.toTypedArray()
+        val odooService = OdooProjectService.getInstance(project)
+        
+        return odooService.getAllModels()
+            .map { it.name }
+            .toTypedArray()
     }
 }

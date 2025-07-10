@@ -6,7 +6,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.FileTypeIndex
 import com.jetbrains.python.psi.*
+import com.jetbrains.python.PythonFileType
 import com.tmc.odoo.pycharm.models.OdooModel
 import com.tmc.odoo.pycharm.models.OdooField
 import com.tmc.odoo.pycharm.models.OdooModule
@@ -17,22 +19,22 @@ class OdooProjectService(private val project: Project) {
     
     private val cachedModels = ConcurrentHashMap<String, OdooModel>()
     private val cachedModules = ConcurrentHashMap<String, OdooModule>()
-    private var lastScanTime = 0L
+    private var lastScanTime: Long = 0
     private val CACHE_TIMEOUT = 10000L // 10 seconds
-    
+
     companion object {
         fun getInstance(project: Project): OdooProjectService {
             return project.getService(OdooProjectService::class.java)
         }
     }
-    
+
     /**
      * Check if this is an Odoo project by looking for __manifest__.py files
      */
     fun isOdooProject(): Boolean {
         return findOdooManifests().isNotEmpty()
     }
-    
+
     /**
      * Find all __manifest__.py files in the project
      */
@@ -42,7 +44,7 @@ class OdooProjectService(private val project: Project) {
             GlobalSearchScope.projectScope(project)
         ).toList()
     }
-    
+
     /**
      * Get all Odoo models in the project
      */
@@ -50,7 +52,7 @@ class OdooProjectService(private val project: Project) {
         refreshCacheIfNeeded()
         return cachedModels.values.toList()
     }
-    
+
     /**
      * Get all Odoo modules in the project
      */
@@ -58,7 +60,7 @@ class OdooProjectService(private val project: Project) {
         refreshCacheIfNeeded()
         return cachedModules.values.toList()
     }
-    
+
     /**
      * Find a specific model by name
      */
@@ -66,40 +68,41 @@ class OdooProjectService(private val project: Project) {
         refreshCacheIfNeeded()
         return cachedModels[modelName]
     }
-    
+
     /**
      * Find models that inherit from a specific model
      */
-    fun findModelsInheriting(parentModel: String): List<OdooModel> {
+    fun findModelsInheriting(modelName: String): List<OdooModel> {
         refreshCacheIfNeeded()
         return cachedModels.values.filter { model ->
-            model.inherits.contains(parentModel)
+            model.inherits.contains(modelName)
         }
     }
-    
+
     /**
-     * Get all fields for a specific model, including inherited fields
+     * Get fields for a specific model, including inherited fields
      */
     fun getModelFields(modelName: String): List<OdooField> {
-        val model = findModel(modelName) ?: return emptyList()
+        refreshCacheIfNeeded()
+        val model = cachedModels[modelName] ?: return emptyList()
         val fields = mutableListOf<OdooField>()
         
-        // Add direct fields
+        // Add model's own fields
         fields.addAll(model.fields)
         
         // Add inherited fields
-        model.inherits.forEach { parentModelName ->
-            val parentModel = findModel(parentModelName)
-            if (parentModel != null) {
-                fields.addAll(getModelFields(parentModelName))
+        model.inherits.forEach { inheritedModelName ->
+            val inheritedModel = cachedModels[inheritedModelName]
+            if (inheritedModel != null) {
+                fields.addAll(inheritedModel.fields)
             }
         }
         
-        return fields.distinctBy { it.name }
+        return fields
     }
-    
+
     /**
-     * Refresh the cache if it's outdated
+     * Refresh cache if timeout has passed
      */
     private fun refreshCacheIfNeeded() {
         val currentTime = System.currentTimeMillis()
@@ -108,7 +111,7 @@ class OdooProjectService(private val project: Project) {
             lastScanTime = currentTime
         }
     }
-    
+
     /**
      * Scan the project for Odoo models and modules
      */
@@ -116,9 +119,9 @@ class OdooProjectService(private val project: Project) {
         cachedModels.clear()
         cachedModules.clear()
         
-        // Find all Python files in the project
-        val pythonFiles = FilenameIndex.getVirtualFilesByName(
-            "*.py", 
+        // Find all Python files in the project using FileTypeIndex
+        val pythonFiles = FileTypeIndex.getFiles(
+            PythonFileType.INSTANCE,
             GlobalSearchScope.projectScope(project)
         )
         
@@ -137,12 +140,12 @@ class OdooProjectService(private val project: Project) {
             }
         }
     }
-    
+
     /**
      * Scan a Python file for Odoo models
      */
-    private fun scanPythonFile(psiFile: PyFile) {
-        psiFile.topLevelClasses.forEach { pyClass ->
+    private fun scanPythonFile(pyFile: PyFile) {
+        pyFile.topLevelClasses.forEach { pyClass ->
             if (isOdooModel(pyClass)) {
                 val model = extractOdooModel(pyClass)
                 if (model != null) {
@@ -151,38 +154,42 @@ class OdooProjectService(private val project: Project) {
             }
         }
     }
-    
+
     /**
      * Scan a manifest file for module information
      */
-    private fun scanManifestFile(psiFile: PyFile) {
-        val module = extractOdooModule(psiFile)
+    private fun scanManifestFile(manifestFile: PyFile) {
+        val module = extractOdooModule(manifestFile)
         if (module != null) {
             cachedModules[module.name] = module
         }
     }
-    
+
     /**
      * Check if a Python class is an Odoo model
      */
     private fun isOdooModel(pyClass: PyClass): Boolean {
-        // Check for common Odoo model patterns
-        val superClasses = pyClass.superClassExpressions
-        return superClasses.any { expr ->
+        val superClassExpressions = pyClass.superClassExpressions
+        
+        return superClassExpressions.any { expr ->
             when (expr) {
                 is PyReferenceExpression -> {
                     val name = expr.name
-                    name == "Model" || name == "TransientModel" || name == "AbstractModel"
+                    name in listOf("Model", "TransientModel", "AbstractModel")
                 }
                 is PyCallExpression -> {
-                    val callee = expr.callee as? PyReferenceExpression
-                    callee?.name == "models"
+                    val callee = expr.callee
+                    if (callee is PyQualifiedExpression) {
+                        val qualifier = callee.qualifier?.name
+                        val name = callee.name
+                        qualifier == "models" && name in listOf("Model", "TransientModel", "AbstractModel")
+                    } else false
                 }
                 else -> false
             }
         }
     }
-    
+
     /**
      * Extract Odoo model information from a Python class
      */
@@ -238,26 +245,28 @@ class OdooProjectService(private val project: Project) {
             psiClass = pyClass
         )
     }
-    
+
     /**
-     * Extract fields from an Odoo model class
+     * Extract fields from a Python class
      */
     private fun extractFields(pyClass: PyClass): List<OdooField> {
         val fields = mutableListOf<OdooField>()
         
         pyClass.classAttributes.forEach { attribute ->
-            val fieldName = attribute.name
-            if (fieldName != null) {
-                val assignedValue = attribute.findAssignedValue()
-                
-                if (assignedValue is PyCallExpression) {
-                    val callee = assignedValue.callee as? PyReferenceExpression
-                    val fieldType = callee?.name
+            val attributeName = attribute.name ?: return@forEach
+            val assignedValue = attribute.findAssignedValue()
+            
+            if (assignedValue is PyCallExpression) {
+                val callee = assignedValue.callee
+                if (callee is PyQualifiedExpression) {
+                    val qualifier = callee.qualifier?.name
+                    val fieldType = callee.name
                     
-                    if (fieldType != null && isOdooFieldType(fieldType)) {
+                    if (qualifier == "fields" && isOdooFieldType(fieldType)) {
                         fields.add(OdooField(
-                            name = fieldName,
-                            type = fieldType,
+                            name = attributeName,
+                            type = fieldType ?: "Unknown",
+                            isRequired = false, // TODO: Extract from field arguments
                             psiElement = attribute
                         ))
                     }
@@ -267,56 +276,32 @@ class OdooProjectService(private val project: Project) {
         
         return fields
     }
-    
+
     /**
-     * Check if a name represents an Odoo field type
+     * Check if a type name is a valid Odoo field type
      */
-    private fun isOdooFieldType(name: String): Boolean {
-        return name in setOf(
+    private fun isOdooFieldType(typeName: String?): Boolean {
+        val odooFieldTypes = setOf(
             "Char", "Text", "Html", "Boolean", "Integer", "Float", "Monetary",
             "Date", "Datetime", "Selection", "Many2one", "One2many", "Many2many",
             "Binary", "Image", "Json", "Properties"
         )
+        return typeName in odooFieldTypes
     }
-    
+
     /**
      * Extract module information from a manifest file
      */
-    private fun extractOdooModule(psiFile: PyFile): OdooModule? {
-        // Look for dictionary definition in manifest
-        val statements = psiFile.statements
-        val dictExpr = statements.filterIsInstance<PyExpressionStatement>()
-            .mapNotNull { it.expression as? PyDictLiteralExpression }
-            .firstOrNull() ?: return null
+    private fun extractOdooModule(manifestFile: PyFile): OdooModule? {
+        // TODO: Parse manifest file for module information
+        val manifestPath = manifestFile.virtualFile?.path ?: return null
+        val moduleName = manifestFile.virtualFile?.parent?.name ?: return null
         
-        val name = dictExpr.elements.find { 
-            it.key?.text?.contains("name") == true 
-        }?.value?.let { (it as? PyStringLiteralExpression)?.stringValue }
-        
-        val version = dictExpr.elements.find { 
-            it.key?.text?.contains("version") == true 
-        }?.value?.let { (it as? PyStringLiteralExpression)?.stringValue }
-        
-        val depends = mutableListOf<String>()
-        dictExpr.elements.find { 
-            it.key?.text?.contains("depends") == true 
-        }?.value?.let { value ->
-            if (value is PyListLiteralExpression) {
-                value.elements.forEach { element ->
-                    if (element is PyStringLiteralExpression) {
-                        depends.add(element.stringValue)
-                    }
-                }
-            }
-        }
-        
-        return if (name != null) {
-            OdooModule(
-                name = name,
-                version = version ?: "1.0.0",
-                depends = depends,
-                manifestFile = psiFile
-            )
-        } else null
+        return OdooModule(
+            name = moduleName,
+            version = "Unknown",
+            depends = emptyList(),
+            manifestFile = manifestFile
+        )
     }
 }

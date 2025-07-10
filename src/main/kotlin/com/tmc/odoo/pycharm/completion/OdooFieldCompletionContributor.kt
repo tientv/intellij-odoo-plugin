@@ -15,14 +15,14 @@ import com.tmc.odoo.pycharm.models.OdooConstants
 class OdooFieldCompletionContributor : CompletionContributor() {
     
     init {
-        // Complete field names in attribute access
+        // Complete field names in self.field_name context
         extend(
             CompletionType.BASIC,
-            fieldAccessPattern(),
+            selfFieldAccessPattern(),
             OdooFieldCompletionProvider()
         )
         
-        // Complete field types in assignments
+        // Complete field types in field assignments (e.g., fields.Char())
         extend(
             CompletionType.BASIC,
             fieldTypePattern(),
@@ -30,17 +30,38 @@ class OdooFieldCompletionContributor : CompletionContributor() {
         )
     }
     
-    private fun fieldAccessPattern(): PsiElementPattern<PsiElement, *> {
+    private fun selfFieldAccessPattern(): PsiElementPattern<PsiElement, *> {
         return PlatformPatterns.psiElement()
             .withLanguage(PythonLanguage.getInstance())
             .afterLeaf(".")
-            .withParent(PyReferenceExpression::class.java)
+            .withParent(
+                PlatformPatterns.psiElement(PyReferenceExpression::class.java)
+                    .withParent(
+                        PlatformPatterns.psiElement(PyQualifiedExpression::class.java)
+                            .withChild(
+                                PlatformPatterns.psiElement(PyReferenceExpression::class.java)
+                                    .withName("self")
+                            )
+                    )
+            )
     }
     
     private fun fieldTypePattern(): PsiElementPattern<PsiElement, *> {
         return PlatformPatterns.psiElement()
             .withLanguage(PythonLanguage.getInstance())
-            .inside(PyCallExpression::class.java)
+            .inside(
+                PlatformPatterns.psiElement(PyCallExpression::class.java)
+                    .withChild(
+                        PlatformPatterns.psiElement(PyReferenceExpression::class.java)
+                            .withParent(
+                                PlatformPatterns.psiElement(PyQualifiedExpression::class.java)
+                                    .withChild(
+                                        PlatformPatterns.psiElement(PyReferenceExpression::class.java)
+                                            .withName("fields")
+                                    )
+                            )
+                    )
+            )
     }
 }
 

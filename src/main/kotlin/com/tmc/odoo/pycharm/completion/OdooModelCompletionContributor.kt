@@ -6,7 +6,7 @@ import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
-import com.jetbrains.python.psi.PyStringLiteralExpression
+import com.jetbrains.python.psi.*
 import com.jetbrains.python.PythonLanguage
 import com.tmc.odoo.pycharm.services.OdooProjectService
 import com.tmc.odoo.pycharm.icons.OdooIcons
@@ -14,18 +14,32 @@ import com.tmc.odoo.pycharm.icons.OdooIcons
 class OdooModelCompletionContributor : CompletionContributor() {
     
     init {
-        // Complete model names in string literals
+        // Complete model names in self.env[''] context
         extend(
             CompletionType.BASIC,
-            stringLiteralPattern(),
+            envModelPattern(),
             OdooModelCompletionProvider()
         )
     }
     
-    private fun stringLiteralPattern(): PsiElementPattern<PsiElement, *> {
+    private fun envModelPattern(): PsiElementPattern<PsiElement, *> {
         return PlatformPatterns.psiElement()
             .withLanguage(PythonLanguage.getInstance())
             .inside(PlatformPatterns.psiElement(PyStringLiteralExpression::class.java))
+            .inside(
+                PlatformPatterns.psiElement(PySubscriptionExpression::class.java)
+                    .withChild(
+                        PlatformPatterns.psiElement(PyReferenceExpression::class.java)
+                            .withName("env")
+                            .withParent(
+                                PlatformPatterns.psiElement(PyQualifiedExpression::class.java)
+                                    .withChild(
+                                        PlatformPatterns.psiElement(PyReferenceExpression::class.java)
+                                            .withName("self")
+                                    )
+                            )
+                    )
+            )
     }
 }
 
@@ -50,7 +64,7 @@ class OdooModelCompletionProvider : CompletionProvider<CompletionParameters>() {
         models.forEach { model ->
             val lookupElement = LookupElementBuilder.create(model.name)
                 .withIcon(OdooIcons.MODEL)
-                .withTypeText(model.modulePath)
+                .withTypeText(model.modulePath ?: "")
                 .withTailText(" (${model.description})", true)
                 .withInsertHandler { context, item ->
                     // Custom insert handler if needed

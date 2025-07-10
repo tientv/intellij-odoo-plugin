@@ -69,3 +69,8 @@ pids
 
 # Plugin verification reports
 verification-metadata.xml
+
+# Claude Code and Serena
+.claude/
+.serena/
+CLAUDE.md
