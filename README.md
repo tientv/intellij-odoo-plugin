@@ -45,8 +45,42 @@
 
 ### 🔍 **Code Navigation**
 - **Go to Definition**: Navigate directly to model definitions with Ctrl+Click
+- **_inherit Navigation**: Click on `_inherit` strings to jump to parent model definitions
 - **Find Usages**: Find all references to models and fields across your project
 - **Cross-Module Navigation**: Jump between related models in different modules
+
+### 🧬 **Inheritance Support** ⭐ NEW in v1.0.5
+- **Inherited Field Completion**: Automatically shows fields from parent models
+  ```python
+  class SaleOrder(models.Model):
+      _inherit = 'sale.order'
+      
+      def my_method(self):
+          self.partner_id.email    # ✨ Shows res.partner fields
+          self.state              # 🎯 Shows inherited sale.order fields
+  ```
+
+- **_inherit String Completion**: Auto-complete model names in inheritance
+  ```python
+  class MyModel(models.Model):
+      _inherit = 'res.p'  # ✨ Auto-completes to 'res.partner'
+  ```
+
+- **Inherited Method Completion**: Access methods from parent models
+  ```python
+  class ProductTemplate(models.Model):
+      _inherit = 'product.template'
+      
+      def my_method(self):
+          self.write()   # ✨ Shows ORM methods from parent
+          self._compute_display_name()  # 🎯 Parent model methods
+  ```
+
+- **Chained Field Navigation**: Navigate through relational fields
+  ```python
+  # Complete through Many2one relationships
+  self.sale_order_id.partner_id.country_id.name  # ✨ Multi-level completion
+  ```
 
 ### 📊 **Code Analysis**
 - **Model Validation**: Detect missing `_name` and `_description` attributes
