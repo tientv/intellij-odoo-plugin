@@ -1,0 +1,15 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- High-res dark theme version for HiDPI displays -->
+  <!-- Lighter version for dark theme -->
+  <circle cx="40" cy="40" r="36" fill="#8B5A7A" stroke="#714B67" stroke-width="4"/>
+  
+  <!-- Stylized "O" for Odoo -->
+  <circle cx="40" cy="40" r="20" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+  <circle cx="40" cy="40" r="8" fill="#FFFFFF"/>
+  
+  <!-- Small gear/cog overlay -->
+  <g transform="translate(56, 16)">
+    <path d="M12,4 L15,5 L16,8 L15,11 L12,12 L9,11 L8,8 L9,5 Z" fill="#FFB84D" stroke="#FFA500" stroke-width="1"/>
+    <circle cx="12" cy="8" r="3" fill="#FFFFFF"/>
+  </g>
+</svg>
