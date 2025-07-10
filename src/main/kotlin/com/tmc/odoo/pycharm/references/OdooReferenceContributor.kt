@@ -28,7 +28,7 @@ class OdooModelReferenceProvider : PsiReferenceProvider() {
         if (stringValue.isBlank()) return PsiReference.EMPTY_ARRAY
         
         // Check if this string literal represents an Odoo model name
-        if (isModelReference(element)) {
+        if (isModelReference(element) || isInheritReference(element)) {
             return arrayOf(OdooModelReference(element, stringValue))
         }
         
@@ -51,6 +51,33 @@ class OdooModelReferenceProvider : PsiReferenceProvider() {
             val operand = parent.operand
             if (operand is PyReferenceExpression && operand.name == "env") {
                 return true
+            }
+        }
+        
+        return false
+    }
+    
+    private fun isInheritReference(element: PyStringLiteralExpression): Boolean {
+        // Check if this string is assigned to _inherit attribute
+        val assignmentStatement = element.parent?.parent as? PyAssignmentStatement ?: return false
+        val targets = assignmentStatement.targets
+        
+        // Check for _inherit = "model.name"
+        for (target in targets) {
+            if (target is PyTargetExpression && target.name == "_inherit") {
+                return true
+            }
+        }
+        
+        // Check for _inherit list assignment: _inherit = ["model1", "model2"]
+        val listExpression = element.parent as? PyListLiteralExpression
+        if (listExpression != null) {
+            val listAssignment = listExpression.parent?.parent as? PyAssignmentStatement
+            val listTargets = listAssignment?.targets
+            for (target in listTargets ?: emptyArray()) {
+                if (target is PyTargetExpression && target.name == "_inherit") {
+                    return true
+                }
             }
         }
         

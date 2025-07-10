@@ -12,6 +12,8 @@ import com.jetbrains.python.PythonFileType
 import com.tmc.odoo.pycharm.models.OdooModel
 import com.tmc.odoo.pycharm.models.OdooField
 import com.tmc.odoo.pycharm.models.OdooModule
+import com.tmc.odoo.pycharm.models.OdooMethod
+import com.tmc.odoo.pycharm.models.OdooMethodType
 import java.util.concurrent.ConcurrentHashMap
 
 @Service(Service.Level.PROJECT)
@@ -80,25 +82,131 @@ class OdooProjectService(private val project: Project) {
     }
 
     /**
-     * Get fields for a specific model, including inherited fields
+     * Get fields for a specific model, including inherited fields (recursive)
      */
     fun getModelFields(modelName: String): List<OdooField> {
         refreshCacheIfNeeded()
+        return getModelFieldsRecursive(modelName, mutableSetOf())
+    }
+
+    /**
+     * Get fields for a specific model recursively, including all inherited fields
+     */
+    private fun getModelFieldsRecursive(modelName: String, visitedModels: MutableSet<String>): List<OdooField> {
+        if (modelName in visitedModels) return emptyList()
+        visitedModels.add(modelName)
+        
         val model = cachedModels[modelName] ?: return emptyList()
         val fields = mutableListOf<OdooField>()
         
         // Add model's own fields
         fields.addAll(model.fields)
         
-        // Add inherited fields
+        // Add inherited fields recursively
         model.inherits.forEach { inheritedModelName ->
-            val inheritedModel = cachedModels[inheritedModelName]
-            if (inheritedModel != null) {
-                fields.addAll(inheritedModel.fields)
+            fields.addAll(getModelFieldsRecursive(inheritedModelName, visitedModels))
+        }
+        
+        return fields.distinctBy { it.name }
+    }
+
+    /**
+     * Get fields for a related model through a Many2one/One2many relationship
+     */
+    fun getRelatedModelFields(fieldName: String, currentModelName: String): List<OdooField> {
+        refreshCacheIfNeeded()
+        val currentModel = cachedModels[currentModelName] ?: return emptyList()
+        
+        // Find the field in current model (including inherited fields)
+        val allFields = getModelFieldsRecursive(currentModelName, mutableSetOf())
+        val field = allFields.find { it.name == fieldName } ?: return emptyList()
+        
+        // Extract related model name from field definition
+        val relatedModelName = extractRelatedModelFromField(field) ?: return emptyList()
+        
+        return getModelFields(relatedModelName)
+    }
+
+    /**
+     * Extract the related model name from a relational field
+     */
+    fun extractRelatedModelFromField(field: OdooField): String? {
+        if (field.type !in listOf("Many2one", "One2many", "Many2many")) return null
+        
+        // Try to extract model name from field definition in PSI
+        val fieldAssignment = field.psiElement as? PyTargetExpression
+        val assignedValue = fieldAssignment?.findAssignedValue() as? PyCallExpression
+        val arguments = assignedValue?.arguments
+        
+        // Look for string argument (first positional argument is usually the model name)
+        arguments?.forEach { arg ->
+            if (arg is PyStringLiteralExpression) {
+                return arg.stringValue
             }
         }
         
-        return fields
+        return null
+    }
+
+    /**
+     * Get all methods for a specific model, including inherited methods
+     */
+    fun getModelMethods(modelName: String): List<OdooMethod> {
+        refreshCacheIfNeeded()
+        return getModelMethodsRecursive(modelName, mutableSetOf())
+    }
+
+    /**
+     * Get methods for a specific model recursively, including all inherited methods
+     */
+    private fun getModelMethodsRecursive(modelName: String, visitedModels: MutableSet<String>): List<OdooMethod> {
+        if (modelName in visitedModels) return emptyList()
+        visitedModels.add(modelName)
+        
+        val model = cachedModels[modelName] ?: return emptyList()
+        val methods = mutableListOf<OdooMethod>()
+        
+        // Extract methods from the model's PSI class
+        model.psiClass.methods.forEach { pyFunction ->
+            val methodName = pyFunction.name ?: return@forEach
+            val methodType = when {
+                methodName.startsWith("_compute_") -> OdooMethodType.COMPUTE
+                methodName.startsWith("_onchange_") -> OdooMethodType.API_ONCHANGE
+                methodName.startsWith("_inverse_") -> OdooMethodType.INVERSE
+                methodName.startsWith("_search_") -> OdooMethodType.SEARCH
+                methodName in listOf("create", "write", "unlink", "read") -> OdooMethodType.CRUD
+                else -> OdooMethodType.BUSINESS_LOGIC
+            }
+            
+            methods.add(OdooMethod(
+                name = methodName,
+                type = methodType,
+                parameters = extractMethodParameters(pyFunction),
+                description = pyFunction.docStringValue
+            ))
+        }
+        
+        // Add inherited methods recursively
+        model.inherits.forEach { inheritedModelName ->
+            methods.addAll(getModelMethodsRecursive(inheritedModelName, visitedModels))
+        }
+        
+        return methods.distinctBy { it.name }
+    }
+
+    /**
+     * Extract parameter names from a Python function
+     */
+    private fun extractMethodParameters(pyFunction: PyFunction): List<String> {
+        val parameters = mutableListOf<String>()
+        pyFunction.parameterList.parameters.forEach { param ->
+            param.name?.let { name ->
+                if (name != "self") {
+                    parameters.add(name)
+                }
+            }
+        }
+        return parameters
     }
 
     /**

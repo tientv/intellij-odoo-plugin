@@ -20,6 +20,13 @@ class OdooModelCompletionContributor : CompletionContributor() {
             envModelPattern(),
             OdooModelCompletionProvider()
         )
+        
+        // Complete model names in _inherit strings
+        extend(
+            CompletionType.BASIC,
+            inheritModelPattern(),
+            OdooInheritCompletionProvider()
+        )
     }
     
     private fun envModelPattern(): PsiElementPattern<PsiElement, *> {
@@ -37,6 +44,33 @@ class OdooModelCompletionContributor : CompletionContributor() {
                                         PlatformPatterns.psiElement(PyReferenceExpression::class.java)
                                             .withName("self")
                                     )
+                            )
+                    )
+            )
+    }
+    
+    private fun inheritModelPattern(): PsiElementPattern<PsiElement, *> {
+        return PlatformPatterns.psiElement()
+            .withLanguage(PythonLanguage.getInstance())
+            .inside(PlatformPatterns.psiElement(PyStringLiteralExpression::class.java))
+            .andOr(
+                // Support _inherit = "model_name"
+                PlatformPatterns.psiElement()
+                    .inside(
+                        PlatformPatterns.psiElement(PyAssignmentStatement::class.java)
+                            .withChild(
+                                PlatformPatterns.psiElement(PyTargetExpression::class.java)
+                                    .withName("_inherit")
+                            )
+                    ),
+                // Support _inherit = ["model1", "model2"]
+                PlatformPatterns.psiElement()
+                    .inside(PlatformPatterns.psiElement(PyListLiteralExpression::class.java))
+                    .inside(
+                        PlatformPatterns.psiElement(PyAssignmentStatement::class.java)
+                            .withChild(
+                                PlatformPatterns.psiElement(PyTargetExpression::class.java)
+                                    .withName("_inherit")
                             )
                     )
             )
@@ -105,6 +139,37 @@ class OdooModelCompletionProvider : CompletionProvider<CompletionParameters>() {
                 .withTypeText("Built-in")
                 .withTailText(" ($description)", true)
                 .withBoldness(true)
+            
+            result.addElement(lookupElement)
+        }
+    }
+}
+
+class OdooInheritCompletionProvider : CompletionProvider<CompletionParameters>() {
+    
+    override fun addCompletions(
+        parameters: CompletionParameters,
+        context: ProcessingContext,
+        result: CompletionResultSet
+    ) {
+        val project = parameters.position.project
+        val odooService = OdooProjectService.getInstance(project)
+        
+        if (!odooService.isOdooProject()) {
+            return
+        }
+        
+        // Get all available models for _inherit completion
+        val models = odooService.getAllModels()
+        
+        models.forEach { model ->
+            val lookupElement = LookupElementBuilder.create(model.name)
+                .withIcon(OdooIcons.MODEL)
+                .withTypeText("Inherit from")
+                .withTailText(" (${model.description})", true)
+                .withInsertHandler { context, item ->
+                    // Auto-complete and position cursor appropriately
+                }
             
             result.addElement(lookupElement)
         }
