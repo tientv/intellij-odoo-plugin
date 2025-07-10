@@ -1,0 +1,10 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Function/method icon -->
+  <rect x="2" y="3" width="12" height="10" rx="2" fill="none" stroke="#10B981" stroke-width="1.5"/>
+  <!-- Function symbol -->
+  <text x="8" y="10" text-anchor="middle" font-family="monospace" font-size="8" fill="#10B981" font-weight="bold">f</text>
+  <!-- Parameters -->
+  <circle cx="5" cy="6" r="0.5" fill="#10B981"/>
+  <circle cx="8" cy="6" r="0.5" fill="#10B981"/>
+  <circle cx="11" cy="6" r="0.5" fill="#10B981"/>
+</svg>

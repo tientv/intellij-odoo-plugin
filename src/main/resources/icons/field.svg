@@ -1,0 +1,8 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Generic field icon - input box -->
+  <rect x="2" y="6" width="12" height="4" rx="2" fill="none" stroke="#6B73FF" stroke-width="1.5"/>
+  <!-- Field label line -->
+  <line x1="3" y1="4" x2="8" y2="4" stroke="#9CA3AF" stroke-width="1"/>
+  <!-- Field value indicator -->
+  <circle cx="5" cy="8" r="1" fill="#6B73FF"/>
+</svg>

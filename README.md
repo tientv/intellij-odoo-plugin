@@ -120,6 +120,12 @@
 - **Inheritance Checking**: Verify model inheritance patterns
 - **Best Practices**: Odoo-specific code quality inspections
 
+### 🎨 **Professional Visual Experience** ⭐ NEW in v1.2.0
+- **Custom Icon System**: 21 professionally designed SVG icons for enhanced visual distinction
+- **Semantic Color Coding**: Color-coded icons for different element types (models, fields, methods)
+- **Dark Theme Support**: Optimized icons for both light and dark IDE themes
+- **Brand Consistency**: Odoo-branded visual identity with purple accent colors
+
 ### 🏗️ **Project Structure**
 - **Auto-Detection**: Automatically recognizes Odoo projects
 - **Multi-Module Support**: Works with complex Odoo project structures

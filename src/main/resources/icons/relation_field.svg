@@ -1,0 +1,11 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Relation field - two connected boxes -->
+  <rect x="1" y="5" width="5" height="6" rx="1" fill="none" stroke="#EF4444" stroke-width="1.5"/>
+  <rect x="10" y="5" width="5" height="6" rx="1" fill="none" stroke="#EF4444" stroke-width="1.5"/>
+  <!-- Connection arrow -->
+  <line x1="6" y1="8" x2="10" y2="8" stroke="#EF4444" stroke-width="1.5"/>
+  <polygon points="9,7 10,8 9,9" fill="#EF4444"/>
+  <!-- Relation indicators -->
+  <circle cx="3.5" cy="8" r="0.8" fill="#EF4444"/>
+  <circle cx="12.5" cy="8" r="0.8" fill="#EF4444"/>
+</svg>

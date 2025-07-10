@@ -1,0 +1,11 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Onchange method - change arrow -->
+  <circle cx="5" cy="8" r="3" fill="none" stroke="#F97316" stroke-width="1.5"/>
+  <circle cx="11" cy="8" r="3" fill="none" stroke="#F97316" stroke-width="1.5"/>
+  <!-- Change arrow -->
+  <path d="M7.5,8 Q9,6 10.5,8" fill="none" stroke="#F97316" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="10,7.5 10.5,8 10,8.5" fill="#F97316"/>
+  <!-- Change indicator dots -->
+  <circle cx="5" cy="8" r="0.8" fill="#F97316"/>
+  <circle cx="11" cy="8" r="0.8" fill="#F97316"/>
+</svg>

@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-07-11
+
+### 🎨 **Complete Icon System Implementation**
+
+#### ✨ **New Visual Identity**
+- **Professional Plugin Icon**: New 40x40px Odoo-branded plugin icon with dark theme variant
+- **Complete Icon Set**: 19 custom SVG icons for all UI elements with semantic color coding
+- **Proper Icon Integration**: Fixed icon placement in `META-INF/` for JetBrains Marketplace compliance
+
+#### 🎯 **Enhanced Visual UI Elements**
+- **Model Icons**: Database table representation for model classes
+- **Field Type Icons**: Distinct icons for each field type (relation, selection, boolean, date, number, binary)
+- **Method Type Icons**: Visual distinction for CRUD, search, API, compute, onchange, and ORM methods
+- **Utility Icons**: API decorators, exceptions, and tool functions with clear iconography
+
+#### 🌈 **Design System**
+- **Odoo Brand Colors**: Primary purple (#714B67) for brand consistency
+- **Semantic Color Coding**: 
+  - Red for errors/exceptions
+  - Green for success/compute operations
+  - Blue for data/numbers
+  - Purple for API/decorators
+  - Orange for changes/dates
+- **IntelliJ Compatibility**: 16x16px sizing with proper stroke weights for IDE integration
+
+#### 🔧 **Technical Improvements**
+- **Icon Resource Management**: Cleaned up old icon references and optimized loading
+- **SVG Format**: Crisp scaling for HiDPI displays
+- **Dark Theme Support**: Dedicated dark theme plugin icon variant
+- **Performance**: Optimized icon loading with proper resource paths
+
+### 📂 **Files Added**
+- **NEW**: `META-INF/pluginIcon.svg` - Main plugin icon (40x40px)
+- **NEW**: `META-INF/pluginIcon_dark.svg` - Dark theme variant
+- **NEW**: `icons/model.svg` - Database table icon
+- **NEW**: `icons/module.svg` - Package/module icon
+- **NEW**: `icons/field.svg` - Generic field icon
+- **NEW**: `icons/method.svg` - Function icon
+- **NEW**: `icons/relation_field.svg` - Relational field icon
+- **NEW**: `icons/selection_field.svg` - Dropdown field icon
+- **NEW**: `icons/boolean_field.svg` - Checkbox icon
+- **NEW**: `icons/date_field.svg` - Calendar icon
+- **NEW**: `icons/number_field.svg` - Numeric field icon
+- **NEW**: `icons/binary_field.svg` - File/binary icon
+- **NEW**: `icons/crud_method.svg` - CRUD operations icon
+- **NEW**: `icons/search_method.svg` - Search/filter icon
+- **NEW**: `icons/api_method.svg` - API method icon
+- **NEW**: `icons/compute_method.svg` - Compute function icon
+- **NEW**: `icons/onchange_method.svg` - Change detection icon
+- **NEW**: `icons/orm_method.svg` - ORM method icon
+- **NEW**: `icons/api.svg` - API decorator icon
+- **NEW**: `icons/exception.svg` - Exception/error icon
+- **NEW**: `icons/tool.svg` - Utility tool icon
+
+### 🔧 **Files Modified**
+- **Enhanced**: `OdooIcons.kt` - Removed obsolete icon references and cleaned up code
+- **Removed**: `icons/odoo.svg` - Moved to proper `META-INF/` location
+
+### 📊 **Impact**
+- **+21 new icon files** providing complete visual coverage
+- **Professional appearance** in JetBrains Marketplace
+- **Enhanced user experience** with clear visual distinction between code elements
+- **Brand consistency** with Odoo's visual identity
+- **100% backward compatible** with existing functionality
+
 ## [1.1.0] - 2025-07-10
 
 ### ✨ **Major Navigation & Completion Enhancements**
@@ -198,7 +263,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Manual installation from GitHub releases
 - Development build support for contributors
 
-[Unreleased]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.0.4...v1.0.5
 [1.0.0]: https://github.com/tientv/intellij-odoo-plugin/releases/tag/v1.0.0

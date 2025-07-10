@@ -1,0 +1,11 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- ORM method - database with gears -->
+  <ellipse cx="8" cy="5" rx="5" ry="2" fill="none" stroke="#1F2937" stroke-width="1.5"/>
+  <path d="M3,5 Q3,7 8,7 Q13,7 13,5" fill="none" stroke="#1F2937" stroke-width="1.5"/>
+  <path d="M3,7 Q3,9 8,9 Q13,9 13,7" fill="none" stroke="#1F2937" stroke-width="1.5"/>
+  <!-- Small gear -->
+  <g transform="translate(11, 10) scale(0.8)">
+    <path d="M3,1 L4,1.5 L4.5,3 L4,4.5 L3,5 L2,4.5 L1.5,3 L2,1.5 Z" fill="none" stroke="#1F2937" stroke-width="0.8"/>
+    <circle cx="3" cy="3" r="0.8" fill="#1F2937"/>
+  </g>
+</svg>

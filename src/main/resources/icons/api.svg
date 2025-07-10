@@ -1,0 +1,8 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- API decorator icon -->
+  <circle cx="8" cy="8" r="6" fill="none" stroke="#6366F1" stroke-width="1.5"/>
+  <!-- @ symbol -->
+  <circle cx="8" cy="7" r="2.5" fill="none" stroke="#6366F1" stroke-width="1.2"/>
+  <circle cx="8" cy="7" r="1" fill="#6366F1"/>
+  <path d="M10.5,7 Q10.5,9.5 8,9.5 Q6.5,9.5 6.5,8" fill="none" stroke="#6366F1" stroke-width="1"/>
+</svg>

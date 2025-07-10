@@ -1,0 +1,7 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Exception/error icon -->
+  <polygon points="8,2 14,8 8,14 2,8" fill="none" stroke="#EF4444" stroke-width="1.5"/>
+  <!-- Warning symbol -->
+  <line x1="8" y1="5" x2="8" y2="9" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="8" cy="11" r="0.8" fill="#EF4444"/>
+</svg>

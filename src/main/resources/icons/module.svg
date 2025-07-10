@@ -1,0 +1,10 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Package/module icon -->
+  <rect x="2" y="4" width="12" height="10" rx="1" fill="none" stroke="#714B67" stroke-width="1.5"/>
+  <!-- Package lid -->
+  <rect x="2" y="2" width="12" height="4" rx="1" fill="#714B67" opacity="0.8"/>
+  <!-- Package lines -->
+  <line x1="5" y1="4" x2="5" y2="14" stroke="#714B67" stroke-width="0.5"/>
+  <line x1="11" y1="4" x2="11" y2="14" stroke="#714B67" stroke-width="0.5"/>
+  <line x1="2" y1="8" x2="14" y2="8" stroke="#714B67" stroke-width="0.5"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Tool/utility icon -->
+  <rect x="3" y="3" width="10" height="10" rx="1" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+  <!-- Wrench/tool -->
+  <path d="M6,6 L7,5 L9,7 L10,6 L11,7 L9,9 L7,7 L6,8 Z" fill="none" stroke="#6B7280" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Tool handle -->
+  <line x1="5" y1="9" x2="7" y2="11" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

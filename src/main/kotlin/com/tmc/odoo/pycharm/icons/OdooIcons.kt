@@ -4,9 +4,7 @@ import com.intellij.openapi.util.IconLoader
 import javax.swing.Icon
 
 object OdooIcons {
-    // Main icons
-    @JvmField
-    val ODOO = IconLoader.getIcon("/icons/odoo.svg", OdooIcons::class.java)
+    // Main icons - using IntelliJ default for main icon since it's handled by META-INF/pluginIcon.svg
     
     @JvmField
     val MODEL = IconLoader.getIcon("/icons/model.svg", OdooIcons::class.java)
@@ -66,10 +64,4 @@ object OdooIcons {
     
     @JvmField
     val TOOL = IconLoader.getIcon("/icons/tool.svg", OdooIcons::class.java)
-    
-    // Fallback to default IntelliJ icons if custom icons are not available
-    init {
-        // This will use IntelliJ's default icons as fallback
-        // In a real implementation, you would provide actual SVG icons
-    }
 }
