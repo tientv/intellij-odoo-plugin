@@ -49,6 +49,38 @@
 - **Find Usages**: Find all references to models and fields across your project
 - **Cross-Module Navigation**: Jump between related models in different modules
 
+### 🔧 **Advanced Navigation & References** ⭐ NEW in v1.1.0
+- **Compute Function Navigation**: Ctrl+click on `compute="method_name"` to navigate directly to compute methods
+  ```python
+  name = fields.Char(compute='_compute_display_name')  # ✨ Click to jump to method
+  
+  @api.depends('first_name', 'last_name')
+  def _compute_display_name(self):  # 🎯 Navigate here instantly
+      for record in self:
+          record.name = f"{record.first_name} {record.last_name}"
+  ```
+
+- **Smart Import Completion**: Intelligent auto-completion for Odoo imports
+  ```python
+  from odoo import models, fields, api  # ✨ Auto-completes common imports
+  from odoo.exceptions import UserError  # 🎯 Context-aware suggestions
+  from odoo.tools import safe_eval       # 🔍 Tool imports
+  ```
+
+- **_name Navigation**: Navigate from model name definitions
+  ```python
+  class MyModel(models.Model):
+      _name = 'my.custom.model'  # ✨ Ctrl+click to find usages
+      _inherit = 'res.partner'   # 🎯 Navigate to parent model
+  ```
+
+- **Mixin Intelligence**: Smart completion for common Odoo mixins
+  ```python
+  class MyModel(models.Model, MailThread):  # ✨ Suggests MailThread, UtmMixin, etc.
+      _name = 'my.model'
+      _inherit = ['mail.thread', 'portal.mixin']  # 🎯 Auto-complete mixins
+  ```
+
 ### 🧬 **Inheritance Support** ⭐ NEW in v1.0.5
 - **Inherited Field Completion**: Automatically shows fields from parent models
   ```python
@@ -120,6 +152,22 @@
 ```python
 # In any Python file, start typing model names in quotes
 model_name = 'res.partner'  # ✨ Auto-completes with available models
+```
+
+#### Smart Import Assistance
+```python
+from odoo.  # ✨ Auto-completes: models, fields, api, exceptions, tools
+from odoo.models import  # 🎯 Suggests: Model, TransientModel, AbstractModel
+from odoo.exceptions import  # 🔍 Suggests: UserError, ValidationError, etc.
+```
+
+#### Compute Function Navigation
+```python
+class MyModel(models.Model):
+    name = fields.Char(compute='_compute_name')  # ✨ Ctrl+click to navigate
+    
+    def _compute_name(self):  # 🎯 Jump here instantly
+        pass
 ```
 
 #### Field Access

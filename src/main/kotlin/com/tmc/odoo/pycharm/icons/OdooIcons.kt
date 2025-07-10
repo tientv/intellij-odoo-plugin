@@ -58,6 +58,15 @@ object OdooIcons {
     @JvmField
     val ORM_METHOD = IconLoader.getIcon("/icons/orm_method.svg", OdooIcons::class.java)
     
+    @JvmField
+    val API = IconLoader.getIcon("/icons/api.svg", OdooIcons::class.java)
+    
+    @JvmField
+    val EXCEPTION = IconLoader.getIcon("/icons/exception.svg", OdooIcons::class.java)
+    
+    @JvmField
+    val TOOL = IconLoader.getIcon("/icons/tool.svg", OdooIcons::class.java)
+    
     // Fallback to default IntelliJ icons if custom icons are not available
     init {
         // This will use IntelliJ's default icons as fallback

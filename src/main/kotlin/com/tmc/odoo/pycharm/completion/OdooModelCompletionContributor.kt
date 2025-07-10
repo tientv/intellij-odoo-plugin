@@ -21,7 +21,7 @@ class OdooModelCompletionContributor : CompletionContributor() {
             OdooModelCompletionProvider()
         )
         
-        // Complete model names in _inherit strings
+        // Complete model names in _inherit and _name strings
         extend(
             CompletionType.BASIC,
             inheritModelPattern(),
@@ -54,13 +54,21 @@ class OdooModelCompletionContributor : CompletionContributor() {
             .withLanguage(PythonLanguage.getInstance())
             .inside(PlatformPatterns.psiElement(PyStringLiteralExpression::class.java))
             .andOr(
-                // Support _inherit = "model_name"
+                // Support _inherit = "model_name" and _name = "model_name"
                 PlatformPatterns.psiElement()
                     .inside(
                         PlatformPatterns.psiElement(PyAssignmentStatement::class.java)
                             .withChild(
                                 PlatformPatterns.psiElement(PyTargetExpression::class.java)
                                     .withName("_inherit")
+                            )
+                    ),
+                PlatformPatterns.psiElement()
+                    .inside(
+                        PlatformPatterns.psiElement(PyAssignmentStatement::class.java)
+                            .withChild(
+                                PlatformPatterns.psiElement(PyTargetExpression::class.java)
+                                    .withName("_name")
                             )
                     ),
                 // Support _inherit = ["model1", "model2"]

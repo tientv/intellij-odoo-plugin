@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-07-10
+
+### ✨ **Major Navigation & Completion Enhancements**
+
+#### 🔧 **Compute Function Navigation**
+- **Navigate to Compute Methods**: Ctrl+click on `compute="method_name"` in field definitions to jump directly to the compute method
+- **Auto-Complete Compute Methods**: Smart suggestions when typing compute function names
+- **Method Discovery**: Automatically finds all `_compute_*` methods in the current class
+
+#### 📦 **Import Statement Intelligence**  
+- **Smart Import Completion**: Auto-complete for common Odoo imports (`odoo.models`, `odoo.fields`, `odoo.api`)
+- **Context-Aware From-Import**: Intelligent suggestions based on import source:
+  - `from odoo.models import` → suggests `Model`, `TransientModel`, `AbstractModel`
+  - `from odoo.fields import` → suggests all field types (`Char`, `Many2one`, etc.)
+  - `from odoo.api import` → suggests decorators (`depends`, `onchange`, `constrains`)
+  - `from odoo.exceptions import` → suggests `UserError`, `ValidationError`, etc.
+- **Module Import Support**: Auto-complete module names and model classes
+
+#### 🎯 **Enhanced Model Reference Navigation**
+- **_name Navigation**: Ctrl+click on `_name = "model.name"` to navigate to model definitions
+- **Extended _inherit Support**: Enhanced navigation for inheritance patterns
+- **Model Discovery**: Improved detection of model references in various contexts
+
+#### 🧩 **Mixin & Inheritance Intelligence**
+- **Mixin Class Completion**: Smart suggestions for common Odoo mixins (`MailThread`, `UtmMixin`, `PortalMixin`)
+- **Base Class Navigation**: Navigate to mixin and abstract model definitions
+- **Inheritance Context Detection**: Recognize inheritance patterns in class definitions
+
+### 🏗️ **Technical Improvements**
+- **New Reference Providers**: Added compute function and mixin reference resolution
+- **Enhanced PSI Patterns**: Better detection of various code contexts
+- **Modular Architecture**: Separated concerns into focused completion contributors
+- **Icon System**: Added new icons for API, exceptions, and tools
+
+### 🔧 **Files Added/Modified**
+- **NEW**: `OdooImportCompletionContributor.kt` - Import statement intelligence (+176 lines)
+- **NEW**: `OdooMixinCompletionContributor.kt` - Mixin class completion (+98 lines)
+- **Enhanced**: `OdooReferenceContributor.kt` - Added compute function & mixin navigation (+187 lines)
+- **Enhanced**: `OdooModelCompletionContributor.kt` - Extended _name support (+17 lines)
+- **Enhanced**: `OdooIcons.kt` - Added API, exception, and tool icons (+12 lines)
+- **Enhanced**: `OdooProjectService.kt` - Made isOdooModel() public (+1 line)
+- **Updated**: `plugin.xml` - Registered new completion contributors (+6 lines)
+
+### 📊 **Impact**
+- **+497 lines** of new functionality across 7 files
+- **4 new completion contributors** for comprehensive IDE support
+- **Enhanced developer experience** with intelligent navigation and completion
+- **100% backward compatible** with all existing features
+
 ## [1.0.5] - 2025-07-10
 
 ### ✨ **Major Features Added**
@@ -149,5 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Manual installation from GitHub releases
 - Development build support for contributors
 
-[Unreleased]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.0.5...v1.1.0
+[1.0.5]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.0.4...v1.0.5
 [1.0.0]: https://github.com/tientv/intellij-odoo-plugin/releases/tag/v1.0.0

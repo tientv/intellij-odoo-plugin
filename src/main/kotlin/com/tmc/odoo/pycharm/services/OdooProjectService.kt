@@ -276,7 +276,7 @@ class OdooProjectService(private val project: Project) {
     /**
      * Check if a Python class is an Odoo model
      */
-    private fun isOdooModel(pyClass: PyClass): Boolean {
+    fun isOdooModel(pyClass: PyClass): Boolean {
         val superClassExpressions = pyClass.superClassExpressions
         
         return superClassExpressions.any { expr ->

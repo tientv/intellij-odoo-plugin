@@ -59,6 +59,14 @@
         <completion.contributor 
             language="Python" 
             implementationClass="com.tmc.odoo.pycharm.completion.OdooMethodCompletionContributor"/>
+        
+        <completion.contributor 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.completion.OdooImportCompletionContributor"/>
+        
+        <completion.contributor 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.completion.OdooMixinCompletionContributor"/>
 
         <!-- Reference Contributors -->
         <psi.referenceContributor 
