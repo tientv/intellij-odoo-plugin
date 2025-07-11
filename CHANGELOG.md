@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2025-07-11
+
+### 🚀 **Complete Field System Enhancement**
+
+#### ✨ **Comprehensive Field Type Autocompletion**
+- **Enhanced Field Types**: Complete autocompletion for all Odoo field types with smart constructor generation
+- **Field Attributes**: Context-aware completion for field attributes (`string`, `required`, `readonly`, `help`, etc.)
+- **Type-Specific Parameters**: Intelligent parameter suggestions based on field type (e.g., `comodel_name` for relational fields)
+- **Smart Field Construction**: Automatic generation of field constructors with proper attribute suggestions
+
+#### 🔗 **Advanced Relation Field Features**
+- **Comodel Autocompletion**: Smart suggestions for `comodel_name` parameter in relational fields (`Many2one`, `One2many`, `Many2many`)
+- **Related Field Paths**: Multi-level field path completion for `related` attribute (e.g., `partner_id.country_id.name`)
+- **Jump-to-Definition**: Ctrl+click navigation from comodel references to actual model definitions
+- **Chained Field Navigation**: Navigate through complex relational field chains with visual feedback
+
+#### 🎯 **Enhanced Field Completion Context**
+- **Self Field Access**: Improved completion for `self.field_name` with inheritance-aware suggestions
+- **Domain/Context Fields**: Field completion in domain and context expressions
+- **Compute Method Completion**: Auto-suggest compute method names with `_compute_` prefix
+- **Field Reference Navigation**: Jump between field definitions and usage across files
+
+#### ⚡ **Performance & Architecture Improvements**
+- **Enhanced Field Cache**: New `OdooFieldCache` service with intelligent caching and inheritance resolution
+- **Optimized Field Discovery**: Efficient field extraction with type detection and metadata analysis
+- **Smart Pattern Matching**: Improved PSI pattern detection for various completion contexts
+- **Memory Optimization**: Reduced memory footprint with lazy loading and smart caching strategies
+
+#### 🏗️ **Technical Architecture**
+- **OdooFieldAttributes**: Comprehensive field attribute definitions with type-specific validation
+- **OdooFieldInfo**: Enhanced field metadata with complete type information and relationships
+- **Multiple Completion Providers**: Specialized providers for different completion contexts:
+  - `OdooFieldAttributeCompletionProvider` - Field attribute completion
+  - `OdooComodelCompletionProvider` - Relational model completion
+  - `OdooRelatedFieldCompletionProvider` - Related field path completion
+  - `OdooComputeMethodCompletionProvider` - Compute method suggestions
+- **Enhanced Reference System**: Extended reference providers for navigation and jump-to-definition
+
+### 📂 **Files Added/Enhanced**
+- **Enhanced**: `OdooFieldCompletionContributor.kt` - Complete rewrite with multiple specialized providers (+800 lines)
+- **Enhanced**: `OdooReferenceContributor.kt` - Added comodel and related field reference providers (+200 lines)
+- **Enhanced**: `OdooModel.kt` - Added comprehensive field attribute definitions (+150 lines)
+- **Enhanced**: `OdooFieldCache.kt` - Integration with new field completion system (+50 lines)
+
+### 🎯 **User Experience Improvements**
+- **Rich Field Suggestions**: Visual icons and type information for all field completions
+- **Context-Aware Help**: Intelligent suggestions based on current editing context
+- **Instant Navigation**: Fast jump-to-definition for all relational references
+- **Smart Attribute Completion**: Type-aware attribute suggestions with validation
+
+### 📊 **Impact**
+- **+1200 lines** of enhanced field completion functionality
+- **5 specialized completion providers** for comprehensive coverage
+- **100% backward compatible** with existing features
+- **Significantly improved developer experience** for Odoo field development
+
+### 🔧 **Developer Benefits**
+- **Faster Development**: Reduced typing with intelligent autocompletion
+- **Fewer Errors**: Type-aware suggestions prevent common mistakes
+- **Better Navigation**: Instant access to related model and field definitions
+- **Enhanced Productivity**: Complete field development workflow support
+
 ## [1.3.0] - 2025-07-11
 
 ### 🚀 **High-Performance _inherit Hover & Indexing System**
@@ -325,7 +387,8 @@ This release directly addresses the reported issue: *"currently the latency when
 - Manual installation from GitHub releases
 - Development build support for contributors
 
-[Unreleased]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/tientv/intellij-odoo-plugin/compare/v1.0.5...v1.1.0

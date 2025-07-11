@@ -43,11 +43,34 @@
   partner_id = fields.Many2one()  # 🎯 With parameter hints
   ```
 
+- **Field Attributes**: Context-aware field attribute completion ⭐ NEW in v1.4.0
+  ```python
+  name = fields.Char(
+      string="Name",           # ✨ Auto-completes field attributes
+      required=True,           # 🎯 Type-specific suggestions
+      help="Enter the name"    # 🔍 Context-aware parameters
+  )
+  partner_id = fields.Many2one(
+      comodel_name="res.partner",  # ✨ Model name completion
+      string="Partner"             # 🎯 Relational field attributes
+  )
+  ```
+
+- **Related Field Paths**: Multi-level field completion ⭐ NEW in v1.4.0
+  ```python
+  country_name = fields.Char(
+      related="partner_id.country_id.name",  # ✨ Chained field completion
+      readonly=True                          # 🎯 Smart path navigation
+  )
+  ```
+
 ### 🔍 **Code Navigation**
 - **Go to Definition**: Navigate directly to model definitions with Ctrl+Click
 - **_inherit Navigation**: Click on `_inherit` strings to jump to parent model definitions
 - **Find Usages**: Find all references to models and fields across your project
 - **Cross-Module Navigation**: Jump between related models in different modules
+- **Comodel Navigation**: Ctrl+click on `comodel_name` to jump to related models ⭐ NEW in v1.4.0
+- **Related Field Navigation**: Navigate through complex field relationships with ease ⭐ NEW in v1.4.0
 
 ### 🔧 **Advanced Navigation & References** ⭐ NEW in v1.1.0
 - **Compute Function Navigation**: Ctrl+click on `compute="method_name"` to navigate directly to compute methods
@@ -125,6 +148,13 @@
 - **Lightning-Fast Performance**: O(1) model lookups with async background indexing (no more UI lag!)
 - **Smart Caching**: Intelligent field caching with inheritance-aware resolution
 - **Real-time Updates**: Incremental index updates only for modified files
+
+### 🎯 **Complete Field System** ⭐ NEW in v1.4.0
+- **Comprehensive Field Attributes**: Auto-complete all field attributes with type-specific validation
+- **Smart Constructor Generation**: Intelligent field constructor creation with proper parameter suggestions
+- **Relational Field Intelligence**: Advanced completion for `Many2one`, `One2many`, `Many2many` relationships
+- **Field Path Resolution**: Multi-level field path completion for complex related fields
+- **Context-Aware Suggestions**: Different completions based on field type and usage context
 
 ### 🎨 **Professional Visual Experience** ⭐ NEW in v1.2.0
 - **Custom Icon System**: 21 professionally designed SVG icons for enhanced visual distinction
@@ -212,9 +242,9 @@ records = self.search([('name', 'like', 'test')])  # ✨ Smart parameter complet
 
 | Odoo Version | Support Level | Features |
 |--------------|---------------|----------|
-| **18.0** | ✅ Full | All features, latest API support |
-| **17.0** | ✅ Partial | Core completion and navigation |
-| **16.0** | ⚠️ Basic | Model and field completion |
+| **18.0** | ✅ Full | All features, complete field system, latest API support |
+| **17.0** | ✅ Enhanced | Core completion, navigation, and enhanced field features |
+| **16.0** | ✅ Good | Model, field completion, and basic field attributes |
 
 ## 🔧 Supported IDEs
 
