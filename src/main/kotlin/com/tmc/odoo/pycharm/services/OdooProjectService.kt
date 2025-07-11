@@ -48,9 +48,14 @@ class OdooProjectService(private val project: Project) {
     }
 
     /**
-     * Get all Odoo models in the project
+     * Get all Odoo models in the project - now uses high-performance index
      */
     fun getAllModels(): List<OdooModel> {
+        val index = OdooModelIndex.getInstance(project)
+        if (index.isReady()) {
+            return index.getAllModels().toList()
+        }
+        // Fallback to cache-based approach if index not ready
         refreshCacheIfNeeded()
         return cachedModels.values.toList()
     }
@@ -64,17 +69,29 @@ class OdooProjectService(private val project: Project) {
     }
 
     /**
-     * Find a specific model by name
+     * Find a specific model by name - now uses high-performance index
      */
     fun findModel(modelName: String): OdooModel? {
+        val index = OdooModelIndex.getInstance(project)
+        if (index.isReady()) {
+            return index.getModel(modelName)
+        }
+        // Fallback to cache-based approach if index not ready
         refreshCacheIfNeeded()
         return cachedModels[modelName]
     }
 
     /**
-     * Find models that inherit from a specific model
+     * Find models that inherit from a specific model - now uses high-performance index
      */
     fun findModelsInheriting(modelName: String): List<OdooModel> {
+        val index = OdooModelIndex.getInstance(project)
+        if (index.isReady()) {
+            return index.getChildModels(modelName).mapNotNull { childModelName ->
+                index.getModel(childModelName)
+            }
+        }
+        // Fallback to cache-based approach if index not ready
         refreshCacheIfNeeded()
         return cachedModels.values.filter { model ->
             model.inherits.contains(modelName)
@@ -82,11 +99,11 @@ class OdooProjectService(private val project: Project) {
     }
 
     /**
-     * Get fields for a specific model, including inherited fields (recursive)
+     * Get fields for a specific model, including inherited fields (recursive) - now uses field cache
      */
     fun getModelFields(modelName: String): List<OdooField> {
-        refreshCacheIfNeeded()
-        return getModelFieldsRecursive(modelName, mutableSetOf())
+        val fieldCache = OdooFieldCache.getInstance(project)
+        return fieldCache.getModelFields(modelName)
     }
 
     /**

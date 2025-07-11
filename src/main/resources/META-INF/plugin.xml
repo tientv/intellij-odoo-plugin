@@ -49,6 +49,22 @@
         <!-- Project Service for Odoo detection -->
         <projectService serviceInterface="com.tmc.odoo.pycharm.services.OdooProjectService"
                        serviceImplementation="com.tmc.odoo.pycharm.services.OdooProjectService"/>
+        
+        <!-- High-performance model index service -->
+        <projectService serviceInterface="com.tmc.odoo.pycharm.services.OdooModelIndex"
+                       serviceImplementation="com.tmc.odoo.pycharm.services.OdooModelIndex"/>
+        
+        <!-- High-performance field cache service -->
+        <projectService serviceInterface="com.tmc.odoo.pycharm.services.OdooFieldCache"
+                       serviceImplementation="com.tmc.odoo.pycharm.services.OdooFieldCache"/>
+        
+        <!-- Documentation Provider for _inherit hover -->
+        <lang.documentationProvider 
+            language="Python" 
+            implementationClass="com.tmc.odoo.pycharm.documentation.OdooModelDocumentationProvider"/>
+        
+        <!-- Startup Activity for index initialization -->
+        <postStartupActivity implementation="com.tmc.odoo.pycharm.services.OdooModelIndexStartupActivity"/>
 
         <!-- Completion Contributors -->
         <completion.contributor 

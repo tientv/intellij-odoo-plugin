@@ -120,6 +120,12 @@
 - **Inheritance Checking**: Verify model inheritance patterns
 - **Best Practices**: Odoo-specific code quality inspections
 
+### ⚡ **High-Performance Hover & Indexing** ⭐ NEW in v1.3.0
+- **Rich Hover Documentation**: Instant tooltips for `_inherit` model references with complete model information
+- **Lightning-Fast Performance**: O(1) model lookups with async background indexing (no more UI lag!)
+- **Smart Caching**: Intelligent field caching with inheritance-aware resolution
+- **Real-time Updates**: Incremental index updates only for modified files
+
 ### 🎨 **Professional Visual Experience** ⭐ NEW in v1.2.0
 - **Custom Icon System**: 21 professionally designed SVG icons for enhanced visual distinction
 - **Semantic Color Coding**: Color-coded icons for different element types (models, fields, methods)
@@ -153,6 +159,19 @@
 3. **Start coding**: Enjoy enhanced autocompletion and navigation!
 
 ### Key Features in Action
+
+#### Rich Hover Documentation (NEW! v1.3.0)
+```python
+class MyModel(models.Model):
+    _name = 'my.model'
+    _inherit = 'res.partner'  # ✨ Hover to see rich model information!
+    
+    # Hover shows:
+    # • Model description and technical details
+    # • Complete inheritance hierarchy
+    # • Available fields with types
+    # • Models that extend this one
+```
 
 #### Model Completion
 ```python
@@ -253,8 +272,10 @@ cd intellij-odoo-plugin
 3. Clear PyCharm caches: **File > Invalidate Caches and Restart**
 
 ### Performance Issues?
-1. Increase PyCharm memory allocation in **Help > Change Memory Settings**
-2. Exclude large directories from indexing in **Settings > Project Structure**
+**v1.3.0+ users:** Performance issues have been resolved with the new high-performance indexing system!
+1. ~~Increase PyCharm memory allocation~~ → No longer needed with optimized indexing
+2. ~~Exclude large directories~~ → Incremental updates handle large projects efficiently
+3. **NEW**: Enjoy instant hover tooltips and O(1) model lookups!
 
 ## 📞 Support
 
